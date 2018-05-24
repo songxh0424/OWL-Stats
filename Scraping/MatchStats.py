@@ -2,6 +2,9 @@ import pandas as pd
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import re
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def scrapeMatchID():
@@ -43,6 +46,9 @@ def scrapeMatchStats(matchID):
     browser = webdriver.Chrome()
     browser.get(url)
     page = BeautifulSoup(browser.page_source, 'html5lib')
+    ## date
+    date = page.find('span', {'id': 'tzDate_1'})
+    date = list(date.children)[0]
     ## box scores
     box = page.find('div', {'class': 'names-and-score'})
     team1, team2 = tuple([x.text for x in box.findAll('a')[:2]])
@@ -74,16 +80,12 @@ def scrapeMatchStats(matchID):
     ## detailed stats
     button = browser.find_element_by_xpath("//button[@matchid='%s' and @gamenumber='0']" % matchID)
     button.click()
-    browser.implicitly_wait(2)
-    stats = browser.find_element_by_id('dst_0')
+    wait = WebDriverWait(browser, 10)
+    stats = wait.until(EC.presence_of_element_located((By.ID, 'dst_0')))
     detailedStats = pd.read_html(stats.get_attribute('outerHTML'))[0]
     browser.close()
 
-    results = {'team1': team1, 'team2': team2, 'score': [score1, score2],
+    results = {'team1': team1, 'team2': team2, 'score': [score1, score2], 'date': date,
                'playerStats': playerStats, 'mapStats': mapStats, 'detailedStats': detailedStats}
 
     return results 
-
-
-# matchIDs = scrapeMatchID()
-# testStats = scrapeMatchStats('2625')
