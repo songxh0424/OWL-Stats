@@ -14,14 +14,14 @@ pd2R = function(df.pd) {
 
 allMatchStats = list()
 pb = progress_bar$new(format = "  scraping [:bar] :percent in :elapsed",
-                      total = length(matchIDs), clear = FALSE, width = 50)
+                      total = length(matchIDs), clear = FALSE, width = 80)
 for(id in matchIDs) {
   ## print(paste('scraping match:', id))
   pb$tick()
   matchStats = scrapeMatchStats(id)
   matchStats$playerStats$team1 = pd2R(matchStats$playerStats$team1)
   matchStats$playerStats$team2 = pd2R(matchStats$playerStats$team2)
-  matchStats$detailedStats = pd2R(matchStats$detailedStats)
+  matchStats$detailedStats = pd2R(matchStats$detailedStats)[, 1:16]
   allMatchStats[[id]] = matchStats
 }
 
