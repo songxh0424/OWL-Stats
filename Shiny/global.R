@@ -7,12 +7,13 @@ library(tidyr)
 library(plotly)
 library(stringr)
 library(DT)
-library(markdown)
 library(lubridate)
-library(formattable)
+## library(markdown)
+## library(formattable)
 
 load('../Data/allMatchStats.RData')
 load('../Data/detailedStats.RData')
+load('../Data/savedObjects.RData')
 
 ## plotting and theming functions
 theme_Publication <- function(base_size=10, legend.pos = 'bottom') {
@@ -70,17 +71,6 @@ plot_custom <- function(p, saveTo = NULL, palette = 'tableau20', base_size=10, l
 b = tags$b
 br = tags$br
 bq = tags$blockquote
-
-players = unique(detailedStats$Player)
-playedHeroes = lapply(players, function(p) {
-  df = filter(detailedStats, Player == p) %>% group_by(Hero) %>%
-    summarise(Time = sum(Time)) %>% arrange(desc(Time)) %>%
-    filter(Time > 10)
-  return(df$Hero)
-})
-names(playedHeroes) = players
-
-heroes = unique(detailedStats$Hero)
 
 ## source all components
 source('header.R')
