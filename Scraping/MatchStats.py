@@ -48,7 +48,7 @@ def scrapeMatchStats(matchID):
     page = BeautifulSoup(browser.page_source, 'html5lib')
     ## date
     date = page.find('span', {'id': 'tzDate_1'})
-    date = list(date.children)[0]
+    date = list(date.children)[0].title()
     ## box scores
     box = page.find('div', {'class': 'names-and-score'})
     team1, team2 = tuple([x.text for x in box.findAll('a')[:2]])
