@@ -1,6 +1,19 @@
-################################################################################
-## Functions
-################################################################################
+library(shiny)
+library(shinydashboard)
+library(ggplot2)
+library(ggthemes)
+library(dplyr)
+library(tidyr)
+library(plotly)
+library(stringr)
+library(DT)
+library(markdown)
+library(lubridate)
+library(formattable)
+
+load('../Data/allMatchStats.RData')
+load('../Data/detailedStats.RData')
+
 ## plotting and theming functions
 theme_Publication <- function(base_size=10, legend.pos = 'bottom') {
   t = (theme_foundation(base_size=base_size)
@@ -50,28 +63,26 @@ plot_custom <- function(p, saveTo = NULL, palette = 'tableau20', base_size=10, l
   return(out)
 }
 
-
 ################################################################################
-## Scripts
+## other global objects
 ################################################################################
-library(shiny)
-library(shinydashboard)
-library(ggplot2)
-library(ggthemes)
-library(dplyr)
-library(tidyr)
-library(plotly)
-library(stringr)
-library(DT)
-library(markdown)
-library(lubridate)
-library(formattable)
 
 b = tags$b
 br = tags$br
 bq = tags$blockquote
 
+players = unique(detailedStats$Player)
+playedHeroes = lapply(players, function(p) {
+  df = filter(detailedStats, Player == p) %>% group_by(Hero) %>%
+    summarise(Time = sum(Time)) %>% arrange(desc(Time)) %>%
+    filter(Time > 10)
+  return(df$Hero)
+})
+names(playedHeroes) = players
+
+heroes = unique(detailedStats$Hero)
+
+## source all components
 source('header.R')
 source('sidebar.R')
 source('body.R')
-
