@@ -10,7 +10,7 @@ players = unique(detailedStats$Player)
 playedHeroes = lapply(players, function(p) {
   df = filter(detailedStats, Player == p) %>% group_by(Hero) %>%
     summarise(Time = sum(Time)) %>% arrange(desc(Time)) %>%
-    filter(Time > 10)
+    filter(Time > 30)
   return(df$Hero)
 })
 names(playedHeroes) = players

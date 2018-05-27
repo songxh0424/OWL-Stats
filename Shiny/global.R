@@ -11,7 +11,7 @@ library(lubridate)
 ## library(markdown)
 ## library(formattable)
 
-load('../Data/allMatchStats.RData')
+## load('../Data/allMatchStats.RData')
 load('../Data/detailedStats.RData')
 load('../Data/savedObjects.RData')
 
@@ -39,8 +39,8 @@ theme_Publication <- function(base_size=10, legend.pos = 'bottom') {
                ## legend.margin = unit(0.1, "cm"),
                legend.title = element_text(face="italic"),
                plot.margin=unit(c(10,5,5,5),"mm"),
-               strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
-               strip.text = element_text(face="italic")
+               ## strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+               ## strip.text = element_text(face="italic")
       ))
   return(t)
 }
