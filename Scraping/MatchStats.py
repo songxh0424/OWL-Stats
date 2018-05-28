@@ -5,6 +5,8 @@ import re
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.keys import Keys
 
 
 def scrapeMatchID():
@@ -89,3 +91,31 @@ def scrapeMatchStats(matchID):
                'playerStats': playerStats, 'mapStats': mapStats, 'detailedStats': detailedStats}
 
     return results 
+
+
+
+
+def scrapeHeroStats():
+    """
+    get each players overall hero stats via winstonslab
+    """
+    url = 'https://www.winstonslab.com/customquery/comparePlayers/'
+    browser = webdriver.Chrome()
+    browser.get(url)
+    dateGreater = browser.find_element_by_id('dateGreater')
+    dateGreater.send_keys('2018-01-08')
+    select = Select(browser.find_element_by_id('firstEventSelect'))
+    select.select_by_visible_text('Overwatch League - Season 1')
+    filterTime = browser.find_element_by_id('filter-time')
+    filterTime.send_keys(Keys.BACKSPACE, '180')
+    applyButton = browser.find_element_by_xpath("//button[@class='btn btn-primary btn']")
+    applyButton.click()
+    # browser.implicitly_wait('600')
+    wait = WebDriverWait(browser, 600)
+    element = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='statsTableBody']/tr[1]")))
+    element = browser.find_element_by_tag_name('table')
+    table = pd.read_html(element.get_attribute('outerHTML'))[0]
+    browser.close()
+
+    return(table)
+

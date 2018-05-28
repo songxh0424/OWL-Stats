@@ -26,3 +26,7 @@ for(id in matchIDs) {
 }
 
 save(allMatchStats, file = '../Data/allMatchStats.RData')
+
+heroStats = scrapeHeroStats()
+
+save(heroStats, file = '../Data/heroStatsRaw.RData')
