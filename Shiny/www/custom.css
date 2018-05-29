@@ -14,6 +14,10 @@
     border-left-color: #fdb462;
 }
 
+.skin-yellow .sidebar-menu>li.active>a {
+    border-left-color: #f0f0f0;
+}
+
 /* .shiny-output-error { */
 /*     visibility: hidden; */
 /* } */

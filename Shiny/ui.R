@@ -1,7 +1,7 @@
 fluidPage(
   fluidRow(
     dashboardPage(
-      skin = 'black',
+      skin = 'yellow',
       header = dbHeader,
       sidebar = dbSidebar,
       body = dbBody
