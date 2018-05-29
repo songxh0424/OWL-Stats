@@ -93,8 +93,6 @@ def scrapeMatchStats(matchID):
     return results 
 
 
-
-
 def scrapeHeroStats():
     """
     get each players overall hero stats via winstonslab

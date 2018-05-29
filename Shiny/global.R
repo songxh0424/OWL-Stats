@@ -8,12 +8,14 @@ library(plotly)
 library(stringr)
 library(DT)
 library(lubridate)
+library(shinyjs)
 ## library(markdown)
 ## library(formattable)
 
 ## load('../Data/allMatchStats.RData')
 load('../Data/detailedStats.RData')
 load('../Data/savedObjects.RData')
+load('../Data/heroStats.RData')
 
 ## plotting and theming functions
 theme_Publication <- function(base_size=10, legend.pos = 'bottom') {
@@ -72,7 +74,14 @@ b = tags$b
 br = tags$br
 bq = tags$blockquote
 
+convertMenuItem <- function(mi,tabName) {
+  mi$children[[1]]$attribs['data-toggle']="tab"
+  mi$children[[1]]$attribs['data-value'] = tabName
+  mi
+}
+
 ## source all components
 source('header.R')
 source('sidebar.R')
 source('body.R')
+
