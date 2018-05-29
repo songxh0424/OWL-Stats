@@ -4,6 +4,7 @@ library(lubridate)
 library(stringr)
 
 load('../Data/allMatchStats.RData')
+load('../Data/heroStatsRaw.RData')
 
 finals = c('2625', '3141', '2624', '2510', '2509', '2454', '2817')
 idx = which(names(allMatchStats) %in% finals)
@@ -30,7 +31,19 @@ detailedStats = detailedStats %>%
   ungroup() %>%
   mutate(Rating = as.numeric(Rating), Time = hms(Time) %>% as.numeric() / 60)
 
+matchTotal = detailedStats %>% group_by(Player, Match) %>%
+  summarise(Time = sum(Time), Team = last(Team), Result = last(Result),
+            Opponent = last(Opponent), Score = last(Score),
+            `K/10` = sum(`K/10` * Time) / sum(Time),
+            `D/10` = sum(`D/10` * Time) / sum(Time),
+            `FWin%` = sum(`FWin%` * Time) / sum(Time)) %>%
+  mutate(Hero = 'All Heroes')
+
+detailedStats = bind_rows(detailedStats, matchTotal)
+
 save(detailedStats, file = '../Data/detailedStats.RData')
+
+################################################################################
 
 playerStats = lapply(allMatchStats[-idx], function(match) {
   date = match$date
@@ -49,3 +62,21 @@ playerStats = detailedStats %>% group_by(Team, Date, Player) %>%
   right_join(playerStats, by = c('Team', 'Date', 'Player'))
 
 save(playerStats, file = '../Data/playerStats.RData')
+
+################################################################################
+
+names(heroStats) = names(heroStats) %>% str_replace_all('\\?', '')
+heroStats = heroStats %>%
+  select(Player, Hero, Time, `FWin%`, `Win Rate`, PTK, PTD, K, D, `K/D`,
+         K.2, D.2, TTCU) %>%
+  mutate(Time = hms(Time) %>% as.numeric() / 60) %>%
+  mutate_at(vars(`FWin%`, `Win Rate`, PTK, PTD), funs(str_replace(., '%', '') %>% as.numeric())) %>%
+  mutate_at(vars(`K/D`, K.2, D.2), funs(as.numeric(.))) %>%
+  rename(`Fight Win Rate` = `FWin%`, `% of Team Kills` = PTK, `% of Team Deaths` = PTD,
+         Kills = K, Deaths = D, `Kills/Deaths` = `K/D`, `Kills per 10 min` = K.2,
+         `Deaths per 10 min` = D.2, `Time to Charge Ult` = TTCU, `Time(min.)` = Time)
+
+heroStats = detailedStats %>% group_by(Player) %>% summarise(Team = last(Team)) %>%
+  right_join(heroStats, by = 'Player')
+
+save(heroStats, file = '../Data/heroStats.RData')
