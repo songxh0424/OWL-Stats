@@ -36,13 +36,8 @@ theme_Publication <- function(base_size=10, legend.pos = 'bottom') {
                panel.grid.minor = element_blank(),
                legend.key = element_rect(colour = NA),
                legend.position = legend.pos,
-               ## legend.direction = "horizontal",
-               ## legend.key.size= unit(0.2, "cm"),
-               ## legend.margin = unit(0.1, "cm"),
                legend.title = element_text(face="italic"),
-               plot.margin=unit(c(10,5,5,5),"mm"),
-               ## strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
-               ## strip.text = element_text(face="italic")
+               plot.margin=unit(c(10,5,5,5),"mm")
       ))
   return(t)
 }

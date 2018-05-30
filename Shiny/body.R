@@ -24,7 +24,7 @@ dbBody = dashboardBody(
         column(
           width = 10, offset = 1, align = 'center',
           box(title = 'Players Ranked by Hero Stats', solidHeader = T, width = NULL, collapsible = T,
-              status = 'success', plotlyOutput('bar_heroes', height = 600))
+              status = 'success', plotlyOutput('bar_heroes', height = 600, width = '90%'))
         )
       )
     )

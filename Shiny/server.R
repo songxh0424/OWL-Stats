@@ -17,7 +17,8 @@ function(input, output, session) {
                       `K/D` = 0, Result = 'Not played', Team = last(out$Team))) %>%
       mutate(Result = factor(Result, levels = c('Win', 'Lose', 'Not played'))) %>%
       gather(key = Var, value = Stats, `FWin%`, `K/10`, `D/10`, `K/D`) %>%
-      mutate(Var = factor(Var, levels = c('FWin%', 'K/10', 'D/10', 'K/D'))) 
+      mutate(Var = factor(Var, levels = c('FWin%', 'K/10', 'D/10', 'K/D'))) %>%
+      mutate(Time = round(Time, 2), Stats = round(Stats, 2))
   })
 
   output$playerCard = renderUI({
@@ -43,22 +44,26 @@ function(input, output, session) {
     p = df() %>% ggplot(aes(x = Match, y = Stats)) + geom_line(color = '#386cb0') +
       geom_point(aes(text = Opponent, score = Score, time = Time, color = Result), size = 1) +
       facet_grid(Var ~ ., scales = 'free_y') +
-      scale_color_manual(values = c('green', 'red', 'grey')) +
+      scale_color_manual(values = c('green', 'red', 'grey'), breaks = c('Win', 'Lose', 'Not played')) +
+      geom_vline(xintercept = c(10.5, 20.5, 30.5), linetype = 'dashed', color = 'black', size = 0.1) +
       ylab('')
-    p = plot_custom(p, legend.pos = 'bottom', color = FALSE) + theme(legend.title = element_blank())
+    p = plot_custom(p, legend.pos = 'bottom', color = FALSE) +
+      theme(legend.title = element_blank(), panel.grid.major.x = element_blank()) +
+      ggtitle(input$playedHero)
     layout(ggplotly(p, tooltip = c('text', 'score', 'time', 'x', 'y')),
-           margin = list(l = 50), legend = list(orientation = 'h', x = 0.3, y = 1.1))
+           margin = list(l = 50), legend = list(orientation = 'h', x = 0.3, y = 1.07))
   })
 
   output$bar_heroes = renderPlotly({
     dat = heroStats %>% filter(Hero == input$hero, `Time(min.)` > 30) %>%
+      mutate(`Time(min.)` = round(`Time(min.)`, 2)) %>%
       select(Player, Team, input$hero_stat)
     dat = arrange(dat, dat[[input$hero_stat]]) %>%
       mutate(Player = factor(Player, levels = Player))
     p = dat %>% ggplot(aes_string('Player', paste0('`', input$hero_stat, '`'))) +
-      geom_col(aes(fill = Team)) + coord_flip()
+      geom_col(aes(fill = Team), width = 0.8) + coord_flip()
     p = plot_custom(p, color = FALSE) +
-      theme(legend.position = 'none') + xlab('') +
+      theme(legend.position = 'none') + xlab('') + ggtitle(input$hero) + 
       scale_fill_manual(values = teamTrueColors, breaks = teams)
     ggplotly(p, tooltip = c('x', 'fill', 'y'))
   })

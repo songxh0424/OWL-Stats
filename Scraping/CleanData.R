@@ -32,11 +32,9 @@ detailedStats = detailedStats %>%
   mutate(Rating = as.numeric(Rating), Time = hms(Time) %>% as.numeric() / 60)
 
 matchTotal = detailedStats %>% group_by(Player, Match) %>%
-  summarise(Time = sum(Time), Team = last(Team), Result = last(Result),
-            Opponent = last(Opponent), Score = last(Score),
-            `K/10` = sum(`K/10` * Time) / sum(Time),
-            `D/10` = sum(`D/10` * Time) / sum(Time),
-            `FWin%` = sum(`FWin%` * Time) / sum(Time)) %>%
+  summarise(Team = last(Team), Result = last(Result), Opponent = last(Opponent), Score = last(Score),
+            `K/10` = sum(`K/10` * Time) / sum(Time), `D/10` = sum(`D/10` * Time) / sum(Time),
+            `FWin%` = sum(`FWin%` * Time) / sum(Time), Time = sum(Time)) %>%
   mutate(Hero = 'All Heroes')
 
 detailedStats = bind_rows(detailedStats, matchTotal)
