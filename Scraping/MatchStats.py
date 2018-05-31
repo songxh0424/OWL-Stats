@@ -100,20 +100,22 @@ def scrapeHeroStats():
     url = 'https://www.winstonslab.com/customquery/comparePlayers/'
     browser = webdriver.Chrome()
     browser.get(url)
+    wait = WebDriverWait(browser, 60)
+    enable = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="heroesCombined"]')))
+    enable.click()
+    radio = browser.find_element_by_xpath('//*[@id="all-heroes-combined"]')
+    radio.click()
     dateGreater = browser.find_element_by_id('dateGreater')
     dateGreater.send_keys('2018-01-08')
     select = Select(browser.find_element_by_id('firstEventSelect'))
     select.select_by_visible_text('Overwatch League - Season 1')
-    filterTime = browser.find_element_by_id('filter-time')
-    filterTime.send_keys(Keys.BACKSPACE, '180')
     applyButton = browser.find_element_by_xpath("//button[@class='btn btn-primary btn']")
     applyButton.click()
-    # browser.implicitly_wait('600')
     wait = WebDriverWait(browser, 600)
     element = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='statsTableBody']/tr[1]")))
     element = browser.find_element_by_tag_name('table')
     table = pd.read_html(element.get_attribute('outerHTML'))[0]
+
     browser.close()
 
-    return(table)
-
+    return table

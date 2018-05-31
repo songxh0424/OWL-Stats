@@ -75,6 +75,10 @@ heroStats = heroStats %>%
          `Deaths per 10 min` = D.2, `Time to Charge Ult` = TTCU, `Time(min.)` = Time)
 
 heroStats = detailedStats %>% group_by(Player) %>% summarise(Team = last(Team)) %>%
-  right_join(heroStats, by = 'Player')
+  right_join(heroStats, by = 'Player') %>% group_by(Player) %>%
+  arrange(desc(`Time(min.)`)) %>%
+  mutate(`Hero Usage` = `Time(min.)` / first(`Time(min.)`) * 100) %>%
+  mutate(`Hero Usage` = `Hero Usage` %>% round(2)) %>%
+  ungroup()
 
 save(heroStats, file = '../Data/heroStats.RData')
