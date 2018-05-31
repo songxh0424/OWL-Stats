@@ -1,4 +1,7 @@
 function(input, output, session) {
+  observeEvent('players' %in% input$tabs, {
+    shinyjs::hide(selector = '#sidebarItemExpanded > ul > li:nth-child(2) > ul')
+  })
 
   output$playedHero = renderUI(
     selectInput('playedHero', label = 'Hero', choices = c('All Heroes', playedHeroes[[input$player]]))
@@ -59,22 +62,22 @@ function(input, output, session) {
     p = plot_custom(p, legend.pos = 'bottom', color = FALSE) +
       theme(legend.title = element_blank(), panel.grid.major.x = element_blank()) +
       ggtitle(input$playedHero)
-    layout(ggplotly(p, tooltip = c('text', 'score', 'time', 'x', 'y')),
+    layout(ggplotly(p, tooltip = c('text', 'score', 'time', 'x', 'y'), height = 600),
            margin = list(l = 50), legend = list(orientation = 'h', x = 0.3, y = 1.07))
   })
 
   output$bar_heroes = renderPlotly({
     dat = heroStats %>% filter(Hero == input$hero, `Time(min.)` > 30) %>%
       mutate(`Time(min.)` = round(`Time(min.)`, 2)) %>%
-      select(Player, Team, input$hero_stat)
+      select(Player, Team, input$hero_stat, `Time(min.)`)
     dat = arrange(dat, dat[[input$hero_stat]]) %>%
       mutate(Player = factor(Player, levels = Player))
-    p = dat %>% ggplot(aes_string('Player', paste0('`', input$hero_stat, '`'))) +
+    p = dat %>% ggplot(aes_string('Player', paste0('`', input$hero_stat, '`'), z = '`Time(min.)`')) +
       geom_col(aes(fill = Team), width = 0.8) + coord_flip()
     p = plot_custom(p, color = FALSE) +
       theme(legend.position = 'right') + xlab('') + ggtitle(input$hero) + 
       scale_fill_manual(values = teamTrueColors, breaks = teams)
-    ggplotly(p, tooltip = c('x', 'fill', 'y'))
+    ggplotly(p)
   })
 
   output$box_heroes = renderPlotly({

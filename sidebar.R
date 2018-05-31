@@ -1,4 +1,5 @@
 dbSidebar = dashboardSidebar(
+  useShinyjs(),
   width = 250,
   sidebarMenu(
     convertMenuItem(
@@ -24,6 +25,7 @@ dbSidebar = dashboardSidebar(
       ),
       'heroes'
     ),
-    menuItem('Fun Facts', tabName = 'facts', icon = icon('info-circle'))
+    menuItem('Fun Facts', tabName = 'facts', icon = icon('info-circle')),
+    tags$head(tags$script(HTML('$(document).ready(function() {$(".treeview-menu").css("display", "block");})')))
   )
 )

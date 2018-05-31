@@ -14,7 +14,7 @@ dbBody = dashboardBody(
           width = 10, offset = 1, align = 'center',
           uiOutput('playerCard'),
           box(title = 'Stats Progression over Season 1', solidHeader = T, width = NULL, collapsible = T,
-              status = 'success', plotlyOutput('scatter_player', height = 600, width = '85%'))
+              status = 'success', plotlyOutput('scatter_player', width = '85%', height = 600))
         )
       )
     ),
@@ -24,9 +24,9 @@ dbBody = dashboardBody(
         column(
           width = 10, offset = 1, align = 'center',
           box(title = 'Players Ranked by Hero Stats', solidHeader = T, width = NULL, collapsible = T,
-              status = 'success', plotlyOutput('bar_heroes', height = 600, width = '90%')),
+              status = 'success', plotlyOutput('bar_heroes', width = '90%', height = 600)),
           box(title = 'Players Consistency by Hero', solidHeader = T, width = NULL, collapsible = T,
-              status = 'success', plotlyOutput('box_heroes', height = 600, width = '90%'))
+              status = 'success', plotlyOutput('box_heroes', width = '90%', height = 600))
         )
       )
     )
