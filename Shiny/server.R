@@ -29,7 +29,7 @@ function(input, output, session) {
       title = NULL, background = teamColors[[team]],
       solidHeader = F, width = NULL,
       fluidRow(
-        column(width = 12, align = 'center', h1(input$player))
+        column(width = 12, align = 'center', h1(em(input$player)))
       ),
       fluidRow(
         column(
@@ -38,15 +38,15 @@ function(input, output, session) {
         ),
         column(
           width = 4, align = 'left', br(),
-          valueBox(top3[1, 2], top3[1, 1], icon = icon('bar-chart'), width = 12),
-          valueBox(top3[2, 2], top3[2, 1], icon = icon('bar-chart'), width = 12),
-          valueBox(top3[3, 2], top3[3, 1], icon = icon('bar-chart'), width = 12)
+          valueBox(top3[1, 2], top3[1, 1], icon = icon('bar-chart'), width = 12, color = 'fuchsia'),
+          valueBox(top3[2, 2], top3[2, 1], icon = icon('bar-chart'), width = 12, color = 'fuchsia'),
+          valueBox(top3[3, 2], top3[3, 1], icon = icon('bar-chart'), width = 12, color = 'fuchsia')
         ),
         column(
           width = 4, align = 'left', br(),
-          valueBox(highlights$`Win Rate` %>% paste0('%'), 'Win Rate', icon = icon('trophy'), width = 12),
-          valueBox(highlights$`Kills per 10 min`, 'Kills per 10 min', icon = icon('user-times'), width = 12),
-          valueBox(highlights$`Deaths per 10 min`, 'Deaths per 10 min', icon = icon('bed'), width = 12)
+          valueBox(highlights$`Win Rate` %>% paste0('%'), 'Win Rate', icon = icon('trophy'), width = 12, color = 'lime'),
+          valueBox(highlights$`Kills per 10 min`, 'Kills per 10 min', icon = icon('user-times'), width = 12, color = 'lime'),
+          valueBox(highlights$`Deaths per 10 min`, 'Deaths per 10 min', icon = icon('bed'), width = 12, color = 'lime')
         )
       )
     )

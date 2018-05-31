@@ -7,7 +7,11 @@
 }
 
 .small-box {
-    height: 90px
+    height: 90px;
+}
+
+.small-box p {
+    font-size: 17px;
 }
 
 .skin-black .sidebar-menu>li.active>a {
@@ -25,3 +29,58 @@
 /* .shiny-output-error:before { */
 /*     visibility: hidden; */
 /* } */
+
+/* hero usage box */
+.bg-fuchsia {
+    background-color: #984ea3!important;
+}
+/* player stats box */
+.bg-lime {
+    background-color: #fdb462!important;
+}
+/* LA Valiant */
+.bg-olive {
+    background-color: #2A7230!important;
+}
+/* SF Shock */
+.bg-red {
+    background-color: #FC4C01!important;
+}
+/* LA Gladiators */
+.bg-purple {
+    background-color: #381360!important;
+}
+/* Seoul Dynasty */
+.bg-yellow {
+    background-color: #AA8A00!important;
+}
+/* Dallas Fuels */
+.bg-aqua {
+    background-color: #0071CD!important;
+}
+/* LD Spitfire */
+.bg-teal {
+    background-color: #59CBE8!important;
+}
+/* FL Mayhem */
+.bg-maroon {
+    background-color: #AF272F!important;
+}
+/* Philly Fusion */
+.bg-orange {
+    background-color: #FF9E1B!important;
+}
+/* Houston Outlaws */
+.bg-green {
+    background-color: #97D700!important;
+}
+/* NYXL */
+.bg-blue {
+    background-color: #0F57EA!important;
+}
+/* Boston Uprising */
+.bg-light-blue {
+    background-color: #174B97!important;
+}
+
+
