@@ -23,18 +23,30 @@ function(input, output, session) {
 
   output$playerCard = renderUI({
     team = unique(df()$Team) %>% last()
+    top3 = top3Heroes[[input$player]]
+    highlights = heroStats %>% filter(Player == input$player, Hero == 'All Heroes')
     box(
       title = NULL, background = teamColors[[team]],
       solidHeader = F, width = NULL,
       fluidRow(
-        column(
-          width = 5, align = 'left',
-          img(src = photoURLs[[input$player]], width = 300)
-        ),
+        column(width = 12, align = 'center', h1(input$player))
+      ),
+      fluidRow(
         column(
           width = 4, align = 'left',
-          h2(input$player),
-          p()
+          img(src = photoURLs[[input$player]], width = 320, height = 320)
+        ),
+        column(
+          width = 4, align = 'left', br(),
+          valueBox(top3[1, 2], top3[1, 1], icon = icon('bar-chart'), width = 12),
+          valueBox(top3[2, 2], top3[2, 1], icon = icon('bar-chart'), width = 12),
+          valueBox(top3[3, 2], top3[3, 1], icon = icon('bar-chart'), width = 12)
+        ),
+        column(
+          width = 4, align = 'left', br(),
+          valueBox(highlights$`Win Rate` %>% paste0('%'), 'Win Rate', icon = icon('trophy'), width = 12),
+          valueBox(highlights$`Kills per 10 min`, 'Kills per 10 min', icon = icon('user-times'), width = 12),
+          valueBox(highlights$`Deaths per 10 min`, 'Deaths per 10 min', icon = icon('bed'), width = 12)
         )
       )
     )
