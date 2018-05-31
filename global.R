@@ -8,14 +8,14 @@ library(plotly)
 library(stringr)
 library(DT)
 library(lubridate)
-library(shinyjs)
+## library(shinyjs)
 ## library(markdown)
 ## library(formattable)
 
 ## load('../Data/allMatchStats.RData')
-load('../Data/detailedStats.RData')
-load('../Data/savedObjects.RData')
-load('../Data/heroStats.RData')
+load('./Data/detailedStats.RData')
+load('./Data/savedObjects.RData')
+load('./Data/heroStats.RData')
 
 ## plotting and theming functions
 theme_Publication <- function(base_size=10, legend.pos = 'bottom') {

@@ -39,6 +39,11 @@ matchTotal = detailedStats %>% group_by(Player, Match) %>%
 
 detailedStats = bind_rows(detailedStats, matchTotal)
 
+detailedStats = detailedStats %>%
+  rename(`Time(min.)` = Time, `Fight Win Rate` = `FWin%`, `% of Team Kills` = PTK,
+         `Kills per 10 min` = `K/10`, `Deaths per 10 min` = `D/10`,
+         `Time to Charge Ult` = TTCU)
+
 save(detailedStats, file = '../Data/detailedStats.RData')
 
 ################################################################################
@@ -65,13 +70,13 @@ save(playerStats, file = '../Data/playerStats.RData')
 
 names(heroStats) = names(heroStats) %>% str_replace_all('\\?', '')
 heroStats = heroStats %>%
-  select(Player, Hero, Time, `FWin%`, `Win Rate`, PTK, PTD, K, D, `K/D`,
+  select(Player, Hero, Time, `FWin%`, `Win Rate`, PTK, PTD, `K/D`,
          K.2, D.2, TTCU) %>%
   mutate(Time = hms(Time) %>% as.numeric() / 60) %>%
   mutate_at(vars(`FWin%`, `Win Rate`, PTK, PTD), funs(str_replace(., '%', '') %>% as.numeric())) %>%
   mutate_at(vars(`K/D`, K.2, D.2), funs(as.numeric(.))) %>%
   rename(`Fight Win Rate` = `FWin%`, `% of Team Kills` = PTK, `% of Team Deaths` = PTD,
-         Kills = K, Deaths = D, `Kills/Deaths` = `K/D`, `Kills per 10 min` = K.2,
+         `Kills/Deaths` = `K/D`, `Kills per 10 min` = K.2,
          `Deaths per 10 min` = D.2, `Time to Charge Ult` = TTCU, `Time(min.)` = Time)
 
 heroStats = detailedStats %>% group_by(Player) %>% summarise(Team = last(Team)) %>%

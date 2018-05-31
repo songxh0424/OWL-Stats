@@ -1,7 +1,4 @@
 function(input, output, session) {
-  observeEvent('players' %in% input$tabs, {
-    shinyjs::hide(selector = '#sidebarItemExpanded > ul > li:nth-child(2) > ul')
-  })
 
   output$playedHero = renderUI(
     selectInput('playedHero', label = 'Hero', choices = c('All Heroes', playedHeroes[[input$player]]))
@@ -10,15 +7,15 @@ function(input, output, session) {
   df = reactive({
     matches = data.frame(Match = 1:max(detailedStats$Match))
     out = detailedStats %>%
-      filter(Player == input$player, Hero == input$playedHero, Time >= 3) %>%
-      mutate(`K/D` = `K/10` / `D/10`) 
+      filter(Player == input$player, Hero == input$playedHero, `Time(min.)` >= 3) %>%
+      mutate(`Kills/Deaths` = `Kills per 10 min` / `Deaths per 10 min`) 
     out %>% right_join(matches, by = 'Match') %>%
-      replace_na(list(Player = input$player, `FWin%` = 0, `K/10` = 0, `D/10` = 0,
-                      `K/D` = 0, Result = 'Not played', Team = last(out$Team))) %>%
+      replace_na(list(Player = input$player, `Fight Win Rate` = 0, `Kills per 10 min` = 0, `Deaths per 10 min` = 0,
+                      `Kills/Deaths` = 0, Result = 'Not played', Team = last(out$Team))) %>%
       mutate(Result = factor(Result, levels = c('Win', 'Lose', 'Not played'))) %>%
-      gather(key = Var, value = Stats, `FWin%`, `K/10`, `D/10`, `K/D`) %>%
-      mutate(Var = factor(Var, levels = c('FWin%', 'K/10', 'D/10', 'K/D'))) %>%
-      mutate(Time = round(Time, 2), Stats = round(Stats, 2))
+      gather(key = Var, value = Stats, `Fight Win Rate`, `Kills per 10 min`, `Deaths per 10 min`, `Kills/Deaths`) %>%
+      mutate(Var = factor(Var, levels = c('Fight Win Rate', 'Kills per 10 min', 'Deaths per 10 min', 'Kills/Deaths'))) %>%
+      mutate(`Time(min.)` = round(`Time(min.)`, 2), Stats = round(Stats, 2))
   })
 
   output$playerCard = renderUI({
@@ -54,7 +51,7 @@ function(input, output, session) {
 
   output$scatter_player = renderPlotly({
     p = df() %>% ggplot(aes(x = Match, y = Stats)) + geom_line(color = '#386cb0') +
-      geom_point(aes(text = Opponent, score = Score, time = Time, color = Result), size = 1) +
+      geom_point(aes(text = Opponent, score = Score, time = `Time(min.)`, color = Result), size = 1) +
       facet_grid(Var ~ ., scales = 'free_y') +
       scale_color_manual(values = c('green', 'red', 'grey'), breaks = c('Win', 'Lose', 'Not played')) +
       geom_vline(xintercept = c(10.5, 20.5, 30.5), linetype = 'dashed', color = 'black', size = 0.1) +
@@ -75,8 +72,24 @@ function(input, output, session) {
     p = dat %>% ggplot(aes_string('Player', paste0('`', input$hero_stat, '`'))) +
       geom_col(aes(fill = Team), width = 0.8) + coord_flip()
     p = plot_custom(p, color = FALSE) +
-      theme(legend.position = 'none') + xlab('') + ggtitle(input$hero) + 
+      theme(legend.position = 'right') + xlab('') + ggtitle(input$hero) + 
       scale_fill_manual(values = teamTrueColors, breaks = teams)
     ggplotly(p, tooltip = c('x', 'fill', 'y'))
+  })
+
+  output$box_heroes = renderPlotly({
+    validPlayers = heroStats %>% filter(Hero == input$hero, `Time(min.)` > 30) %>%
+      select(Player, input$hero_stat)
+    validPlayers = arrange(validPlayers, validPlayers[[input$hero_stat]]) %>%
+      select(Player) %>% unlist()
+    dat = detailedStats %>% filter(Hero == input$hero, Player %in% validPlayers, `Time(min.)` > 3) %>%
+      mutate(Player = factor(Player, levels = validPlayers)) %>%
+      select(Player, Team, input$hero_stat)
+    p = dat %>% ggplot(aes_string('Player', paste0('`', input$hero_stat, '`'), color = 'Team')) +
+      geom_boxplot(width =0.8) + coord_flip()
+    p = plot_custom(p, color = TRUE) +
+      theme(legend.position = 'right') + xlab('') + ggtitle(input$hero) + 
+      scale_color_manual(values = teamTrueColors, breaks = teams)
+    ggplotly(p)
   })
 }
