@@ -40,11 +40,30 @@ matchTotal = detailedStats %>% group_by(Player, Match) %>%
 detailedStats = bind_rows(detailedStats, matchTotal)
 
 detailedStats = detailedStats %>%
+  mutate(Stage = ceiling(Match / 10)) %>%
   rename(`Time(min.)` = Time, `Fight Win Rate` = `FWin%`, `% of Team Kills` = PTK,
          `Kills per 10 min` = `K/10`, `Deaths per 10 min` = `D/10`,
          `Time to Charge Ult` = TTCU)
 
 save(detailedStats, file = '../Data/detailedStats.RData')
+
+################################################################################
+
+heroUsage = detailedStats %>% filter(Hero != 'All Heroes') %>%
+  group_by(Player, Stage, Hero) %>%
+  summarise(`Time(min.)` = sum(`Time(min.)`)) %>% ungroup() %>%
+  mutate(Stage = paste('Stage', Stage)) %>% group_by(Player, Stage) %>%
+  mutate(Usage = `Time(min.)` / sum(`Time(min.)`) * 100) %>% ungroup()
+totalHeroUsage = heroUsage %>% filter(Hero != 'All Heroes') %>%
+  group_by(Player, Hero) %>%
+  summarise(`Time(min.)` = sum(`Time(min.)`)) %>% ungroup() %>%
+  mutate(Stage = 'All Stages') %>% group_by(Player) %>%
+  mutate(Usage = `Time(min.)` / sum(`Time(min.)`) * 100) %>% ungroup()
+heroUsage = bind_rows(heroUsage, totalHeroUsage) %>%
+  arrange(Player, Stage, desc(Usage)) %>%
+  mutate(`Time(min.)` = round(`Time(min.)`, 2))
+
+save(heroUsage, file = '../Data/heroUsage.RData')
 
 ################################################################################
 

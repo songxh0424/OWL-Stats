@@ -5,10 +5,11 @@ dbSidebar = dashboardSidebar(
     convertMenuItem(
       menuItem(
         selected = TRUE, startExpanded = T,
-        'Player Stats', tabName = 'players', icon = icon('bar-chart-o'),
+        'Player Stats', tabName = 'players', icon = icon('list'),
         selectizeInput('player', label = 'Player', choices = players, selected = 'Saebyeolbe',
                        options = list(maxOptions = 5, placeholder = 'Input a player\'s name')),
         uiOutput('playedHero'),
+        selectInput('player_stage', label = 'Stage', choices = c('All Stages', paste('Stage', 1:4))),
         br()
       ),
       'players'
@@ -16,7 +17,7 @@ dbSidebar = dashboardSidebar(
     convertMenuItem(
       menuItem(
         selected = FALSE, startExpanded = F,
-        'Heroe Stats', tabName = 'heroes', icon = icon('bar-chart'),
+        'Heroe Stats', tabName = 'heroes', icon = icon('list'),
         selectizeInput('hero', label = 'Hero', choices = heroes, selected = 'Widowmaker',
                        options = list(maxOptions = 5, placeholder = 'Input a player\'s name')),
         selectInput('hero_stat', label = 'Stat', choices = names(heroStats)[-(1:3)],
@@ -25,7 +26,7 @@ dbSidebar = dashboardSidebar(
       ),
       'heroes'
     ),
-    menuItem('Fun Facts', tabName = 'facts', icon = icon('info-circle')),
+    menuItem('League Overview', tabName = 'league', icon = icon('list')),
     tags$head(tags$script(HTML('$(document).ready(function() {$(".treeview-menu").css("display", "block");})')))
   )
 )

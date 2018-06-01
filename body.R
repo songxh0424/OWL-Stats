@@ -12,9 +12,13 @@ dbBody = dashboardBody(
       fluidRow(
         column(
           width = 10, offset = 1, align = 'center',
-          uiOutput('playerCard'),
-          box(title = 'Stats Progression over Season 1', solidHeader = T, width = NULL, collapsible = T,
-              status = 'success', plotlyOutput('scatter_player', width = '85%', height = 600))
+          uiOutput('playerCard') %>% withSpinner(),
+          box(title = 'Stats Progression over Season 1', solidHeader = T, width = NULL,
+              collapsible = T, status = 'success',
+              plotlyOutput('scatter_player', width = '85%', height = 600) %>% withSpinner()),
+          box(title = 'Hero Usage during Season 1', solidHeader = T, width = NULL,
+              collapsible = T, status = 'success',
+              plotlyOutput('bar_heroUsage', width = '85%', height = 600) %>% withSpinner())
         )
       )
     ),
@@ -23,10 +27,12 @@ dbBody = dashboardBody(
       fluidRow(
         column(
           width = 10, offset = 1, align = 'center',
-          box(title = 'Players Ranked by Hero Stats', solidHeader = T, width = NULL, collapsible = T,
-              status = 'success', plotlyOutput('bar_heroes', width = '90%', height = 600)),
-          box(title = 'Players Consistency by Hero', solidHeader = T, width = NULL, collapsible = T,
-              status = 'success', plotlyOutput('box_heroes', width = '90%', height = 600))
+          box(title = 'Players Ranked by Hero Stats', solidHeader = T, width = NULL,
+              collapsible = T, status = 'success',
+              plotlyOutput('bar_heroes', width = '90%', height = 600) %>% withSpinner()),
+          box(title = 'Players Consistency by Hero', solidHeader = T, width = NULL,
+              collapsible = T, status = 'success',
+              plotlyOutput('box_heroes', width = '90%', height = 600) %>% withSpinner())
         )
       )
     )

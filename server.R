@@ -8,9 +8,11 @@ function(input, output, session) {
   )
 
   df = reactive({
-    matches = data.frame(Match = 1:max(detailedStats$Match))
+    stage = switch(input$player_stage, 'All Stages' = 1:4, as.numeric(str_sub(input$player_stage, start = -1)))
+    matches = data.frame(Match = 1:max(detailedStats$Match)) %>%
+      filter(ceiling(Match / 10) %in% stage)
     out = detailedStats %>%
-      filter(Player == input$player, Hero == input$playedHero, `Time(min.)` >= 3) %>%
+      filter(Player == input$player, Hero == input$playedHero, `Time(min.)` >= 3, Stage %in% stage) %>%
       mutate(`Kills/Deaths` = `Kills per 10 min` / `Deaths per 10 min`) 
     out %>% right_join(matches, by = 'Match') %>%
       replace_na(list(Player = input$player, `Fight Win Rate` = 0, `Kills per 10 min` = 0, `Deaths per 10 min` = 0,
@@ -22,7 +24,7 @@ function(input, output, session) {
   })
 
   output$playerCard = renderUI({
-    team = unique(df()$Team) %>% last()
+    team = unique(filter(detailedStats, Player == input$player)$Team) %>% last()
     top3 = top3Heroes[[input$player]]
     highlights = heroStats %>% filter(Player == input$player, Hero == 'All Heroes')
     box(
@@ -57,13 +59,24 @@ function(input, output, session) {
       geom_point(aes(text = Opponent, score = Score, time = `Time(min.)`, color = Result), size = 1) +
       facet_grid(Var ~ ., scales = 'free_y') +
       scale_color_manual(values = c('green', 'red', 'grey'), breaks = c('Win', 'Lose', 'Not played')) +
-      geom_vline(xintercept = c(10.5, 20.5, 30.5), linetype = 'dashed', color = 'black', size = 0.1) +
       ylab('')
+    if(input$player_stage == 'All Stages')
+      p = p + geom_vline(xintercept = c(10.5, 20.5, 30.5), linetype = 'dashed', color = 'black', size = 0.1)
     p = plot_custom(p, legend.pos = 'bottom', color = FALSE) +
       theme(legend.title = element_blank(), panel.grid.major.x = element_blank()) +
-      ggtitle(input$playedHero)
+      ggtitle(paste(input$playedHero, '-', input$player_stage))
     layout(ggplotly(p, tooltip = c('text', 'score', 'time', 'x', 'y'), height = 600),
            margin = list(l = 50), legend = list(orientation = 'h', x = 0.3, y = 1.07))
+  })
+
+  output$bar_heroUsage = renderPlotly({
+    dat = heroUsage %>% filter(Player == input$player, Stage == input$player_stage) %>%
+      mutate(Hero = factor(Hero, levels = rev(Hero)))
+    p = dat %>% ggplot(aes(Hero, Usage)) + geom_col(aes(z = `Time(min.)`), width = 0.7) +
+      coord_flip() + ylab('% of Time Played') +
+      ggtitle(sprintf('Hero Usage - %s', input$player_stage))
+    p = plot_custom(p, color = FALSE)
+    ggplotly(p, tooltip = c('x', 'y', 'z'))
   })
 
   output$bar_heroes = renderPlotly({
@@ -73,7 +86,7 @@ function(input, output, session) {
     dat = arrange(dat, dat[[input$hero_stat]]) %>%
       mutate(Player = factor(Player, levels = Player))
     p = dat %>% ggplot(aes_string('Player', paste0('`', input$hero_stat, '`'), z = '`Time(min.)`')) +
-      geom_col(aes(fill = Team), width = 0.8) + coord_flip()
+      geom_col(aes(fill = Team), width = 0.7) + coord_flip()
     p = plot_custom(p, color = FALSE) +
       theme(legend.position = 'right') + xlab('') + ggtitle(input$hero) + 
       scale_fill_manual(values = teamTrueColors, breaks = teams)
