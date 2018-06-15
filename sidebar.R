@@ -20,8 +20,9 @@ dbSidebar = dashboardSidebar(
         'Heroe Stats', tabName = 'heroes', icon = icon('list'),
         selectizeInput('hero', label = 'Hero', choices = heroes, selected = 'Widowmaker',
                        options = list(maxOptions = 5, placeholder = 'Input a player\'s name')),
-        selectInput('hero_stat', label = 'Stat', choices = names(heroStats)[-(1:3)],
+        selectInput('hero_stat', label = 'Statistic', choices = names(heroStats[[1]])[-(1:3)],
                     selected = 'Kills per 10 min'),
+        selectInput('hero_stage', label = 'Stage', choices = c('All Stages', paste('Stage', 1:4))),
         br()
       ),
       'heroes'

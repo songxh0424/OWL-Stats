@@ -6,12 +6,22 @@
     /* color: #48ca3b; */
 }
 
+.main-header {
+    position: fixed;
+    width:100%;
+}
+
 .sidebar {
     color: #FFF;
     position: fixed;
     width: 250px;
     white-space: nowrap;
     overflow: visible;
+}
+
+/* use this to avoid page header getting covered by fixed header */
+.content {
+    padding-top: 70px;
 }
 
 .small-box {

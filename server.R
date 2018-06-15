@@ -4,7 +4,8 @@ function(input, output, session) {
   })
 
   output$playedHero = renderUI(
-    selectInput('playedHero', label = 'Hero', choices = c('All Heroes', playedHeroes[[input$player]]))
+    selectInput('playedHero', label = 'Hero', choices = playedHeroes[[input$player]],
+                selected = 'All Heroes')
   )
 
   df = reactive({
@@ -26,7 +27,7 @@ function(input, output, session) {
   output$playerCard = renderUI({
     team = unique(filter(detailedStats, Player == input$player)$Team) %>% last()
     top3 = top3Heroes[[input$player]]
-    highlights = heroStats %>% filter(Player == input$player, Hero == 'All Heroes')
+    highlights = heroStats[[1]] %>% filter(Player == input$player, Hero == 'All Heroes')
     box(
       title = NULL, background = teamColors[[team]],
       solidHeader = F, width = NULL,
@@ -80,7 +81,7 @@ function(input, output, session) {
   })
 
   output$bar_heroes = renderPlotly({
-    dat = heroStats %>% filter(Hero == input$hero, `Time(min.)` > 30) %>%
+    dat = heroStats[[input$hero_stage]] %>% filter(Hero == input$hero, `Time(min.)` > 30) %>%
       mutate(`Time(min.)` = round(`Time(min.)`, 2)) %>%
       select(Player, Team, input$hero_stat, `Time(min.)`)
     dat = arrange(dat, dat[[input$hero_stat]]) %>%
@@ -94,7 +95,7 @@ function(input, output, session) {
   })
 
   output$box_heroes = renderPlotly({
-    validPlayers = heroStats %>% filter(Hero == input$hero, `Time(min.)` > 30) %>%
+    validPlayers = heroStats[[input$hero_stage]] %>% filter(Hero == input$hero, `Time(min.)` > 30) %>%
       select(Player, input$hero_stat)
     validPlayers = arrange(validPlayers, validPlayers[[input$hero_stat]]) %>%
       select(Player) %>% unlist()
