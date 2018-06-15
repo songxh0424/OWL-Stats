@@ -2,21 +2,24 @@ library(reticulate)
 library(jsonlite)
 library(dplyr)
 library(progress)
-library(lubridate)
 
 source_python('./MatchStats.py')
 
-matchIDs = scrapeMatchID() %>% rev()
+load('../Data/matchIDs.RData')
+load('../Data/allMatchStats.RData')
+## matchIDs.old = matchIDs
+## matchIDs = scrapeMatchID() %>% rev()
+## matchIDs.new = setdiff(matchIDs, matchIDs.old)
+matchIDs.new = as.character(2632:2667)
 
 pd2R = function(df.pd) {
   df = fromJSON(df.pd$to_json(orient = 'records'))
   return(df)
 }
 
-allMatchStats = list()
 pb = progress_bar$new(format = "  scraping [:bar] :percent in :elapsed",
-                      total = length(matchIDs), clear = FALSE, width = 80)
-for(id in matchIDs) {
+                      total = length(matchIDs.new), clear = FALSE, width = 80)
+for(id in matchIDs.new) {
   ## print(paste('scraping match:', id))
   pb$tick()
   matchStats = scrapeMatchStats(id)
@@ -28,13 +31,6 @@ for(id in matchIDs) {
 
 save(allMatchStats, file = '../Data/allMatchStats.RData')
 
-heroStats = list()
-heroStats[['All Stages']] = scrapeHeroStats('2018-01-10', '2018-06-18')
-heroStats[['Stage 1']] = scrapeHeroStats('2018-01-10', '2018-02-11')
-heroStats[['Stage 2']] = scrapeHeroStats('2018-02-21', '2018-03-26')
-heroStats[['Stage 3']] = scrapeHeroStats('2018-04-04', '2018-05-07')
-heroStats[['Stage 4']] = scrapeHeroStats('2018-05-16', '2018-06-18')
+heroStats = scrapeHeroStats()
 
-heroStatsRaw = heroStats
-
-save(heroStatsRaw, file = '../Data/heroStatsRaw.RData')
+save(heroStats, file = '../Data/heroStatsRaw.RData')

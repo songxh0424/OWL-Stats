@@ -67,42 +67,49 @@ save(heroUsage, file = '../Data/heroUsage.RData')
 
 ################################################################################
 
-playerStats = lapply(allMatchStats[-idx], function(match) {
-  date = match$date
+## playerStats = lapply(allMatchStats[-idx], function(match) {
+##   date = match$date
 
-  df1 = match$playerStats$team1 %>%
-    mutate(Team = match$team1, Opponent = match$team2) %>%
-    select(-`Rating?`)
-  df2 = match$playerStats$team2 %>%
-    mutate(Team = match$team2, Opponent = match$team1) %>%
-    select(-`Rating?`)
-  df1 %>% bind_rows(df2) %>% mutate(Date = mdy(date))
-}) %>% bind_rows()
+##   df1 = match$playerStats$team1 %>%
+##     mutate(Team = match$team1, Opponent = match$team2) %>%
+##     select(-`Rating?`)
+##   df2 = match$playerStats$team2 %>%
+##     mutate(Team = match$team2, Opponent = match$team1) %>%
+##     select(-`Rating?`)
+##   df1 %>% bind_rows(df2) %>% mutate(Date = mdy(date))
+## }) %>% bind_rows()
 
-playerStats = detailedStats %>% group_by(Team, Date, Player) %>%
-  summarise(Time = sum(Time), Score = first(Score), Result = first(Result)) %>%
-  right_join(playerStats, by = c('Team', 'Date', 'Player'))
+## playerStats = detailedStats %>% group_by(Team, Date, Player) %>%
+##   summarise(Time = sum(Time), Score = first(Score), Result = first(Result)) %>%
+##   right_join(playerStats, by = c('Team', 'Date', 'Player'))
 
-save(playerStats, file = '../Data/playerStats.RData')
+## save(playerStats, file = '../Data/playerStats.RData')
 
 ################################################################################
 
-names(heroStats) = names(heroStats) %>% str_replace_all('\\?', '')
-heroStats = heroStats %>%
-  select(Player, Hero, Time, `FWin%`, `Win Rate`, PTK, PTD, `K/D`,
-         K.2, D.2, TTCU) %>%
-  mutate(Time = hms(Time) %>% as.numeric() / 60) %>%
-  mutate_at(vars(`FWin%`, `Win Rate`, PTK, PTD), funs(str_replace(., '%', '') %>% as.numeric())) %>%
-  mutate_at(vars(`K/D`, K.2, D.2), funs(as.numeric(.))) %>%
-  rename(`Fight Win Rate` = `FWin%`, `% of Team Kills` = PTK, `% of Team Deaths` = PTD,
-         `Kills/Deaths` = `K/D`, `Kills per 10 min` = K.2,
-         `Deaths per 10 min` = D.2, `Time to Charge Ult` = TTCU, `Time(min.)` = Time)
+for(i in 1:length(heroStatsRaw)) {
+  heroStats = heroStatsRaw[[i]]
+  names(heroStats) = names(heroStats) %>% str_replace_all('\\?', '')
+  heroStats = heroStats %>%
+    select(Player, Hero, Time, `FWin%`, `Win Rate`, PTK, PTD, `K/D`,
+           K.2, D.2, TTCU) %>%
+    mutate(Time = hms(Time) %>% as.numeric() / 60) %>%
+    mutate_at(vars(`FWin%`, `Win Rate`, PTK, PTD), funs(str_replace(., '%', '') %>% as.numeric())) %>%
+    mutate_at(vars(`K/D`, K.2, D.2), funs(as.numeric(.))) %>%
+    rename(`Fight Win Rate` = `FWin%`, `% of Team Kills` = PTK, `% of Team Deaths` = PTD,
+           `Kills/Deaths` = `K/D`, `Kills per 10 min` = K.2,
+           `Deaths per 10 min` = D.2, `Time to Charge Ult` = TTCU, `Time(min.)` = Time)
 
-heroStats = detailedStats %>% group_by(Player) %>% summarise(Team = last(Team)) %>%
-  right_join(heroStats, by = 'Player') %>% group_by(Player) %>%
-  arrange(desc(`Time(min.)`)) %>%
-  mutate(`Hero Usage` = `Time(min.)` / first(`Time(min.)`) * 100) %>%
-  mutate(`Hero Usage` = `Hero Usage` %>% round(2)) %>%
-  ungroup()
+  heroStats = detailedStats %>% group_by(Player) %>% summarise(Team = last(Team)) %>%
+    right_join(heroStats, by = 'Player') %>% group_by(Player) %>%
+    arrange(desc(`Time(min.)`)) %>%
+    mutate(`Hero Usage` = `Time(min.)` / first(`Time(min.)`) * 100) %>%
+    mutate(`Hero Usage` = `Hero Usage` %>% round(2)) %>%
+    ungroup()
+
+  heroStatsRaw[[i]] = heroStats
+}
+
+heroStats = heroStatsRaw
 
 save(heroStats, file = '../Data/heroStats.RData')

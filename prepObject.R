@@ -11,8 +11,8 @@ load('../Data/heroStats.RData')
 players = unique(detailedStats$Player)
 playedHeroes = lapply(players, function(p) {
   df = filter(detailedStats, Player == p) %>% group_by(Hero) %>%
-    summarise(Time = sum(Time)) %>% arrange(desc(Time)) %>%
-    filter(Time > 30)
+    summarise(`Time(min.)` = sum(`Time(min.)`)) %>% arrange(desc(`Time(min.)`)) %>%
+    filter(`Time(min.)` > 30)
   return(df$Hero)
 })
 names(playedHeroes) = players

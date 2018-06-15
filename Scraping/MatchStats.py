@@ -93,7 +93,7 @@ def scrapeMatchStats(matchID):
     return results 
 
 
-def scrapeHeroStats():
+def scrapeHeroStats(startDate, endDate):
     """
     get each players overall hero stats via winstonslab
     """
@@ -106,7 +106,9 @@ def scrapeHeroStats():
     radio = browser.find_element_by_xpath('//*[@id="all-heroes-combined"]')
     radio.click()
     dateGreater = browser.find_element_by_id('dateGreater')
-    dateGreater.send_keys('2018-01-08')
+    dateGreater.send_keys(startDate)
+    dateSmaller = browser.find_element_by_id('dateSmaller')
+    dateSmaller.send_keys(endDate)
     select = Select(browser.find_element_by_id('firstEventSelect'))
     select.select_by_visible_text('Overwatch League - Season 1')
     applyButton = browser.find_element_by_xpath("//button[@class='btn btn-primary btn']")
