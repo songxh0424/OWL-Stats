@@ -43,7 +43,8 @@ detailedStats = detailedStats %>%
   mutate(Stage = ceiling(Match / 10)) %>%
   rename(`Time(min.)` = Time, `Fight Win Rate` = `FWin%`, `% of Team Kills` = PTK,
          `Kills per 10 min` = `K/10`, `Deaths per 10 min` = `D/10`,
-         `Time to Charge Ult` = TTCU)
+         `Time to Charge Ult` = TTCU) %>%
+  mutate(`Kills/Deaths` = `Kills per 10 min` / `Deaths per 10 min`)
 
 save(detailedStats, file = '../Data/detailedStats.RData')
 
