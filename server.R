@@ -91,7 +91,6 @@ function(input, output, session) {
   output$table_compare_avg = renderFormattable({
     dat = heroStats[[input$player_stage]] %>%
       filter(`Time(min.)` > as.numeric(input$time_thres5), Hero == input$playedHero) %>%
-      group_by(Hero) %>%
       summarise_at(vars(`% of Team Kills`:`Time to Charge Ult`),
                    funs(round(sum(. * `Time(min.)`) / sum(`Time(min.)`), 2)))
     dat = bind_rows(heroStats[[input$player_stage]] %>%
@@ -125,9 +124,19 @@ function(input, output, session) {
                 funs(sprintf('%s (rank: %d)', ., rank(., ties.method = 'first')))) %>%
       select(Player, Team, `Time(min.)`, `Fight Win Rate`:`Time to Charge Ult`)
     player2 = ifelse(is.null(input$select_player2), setdiff(dat$Player, input$player)[1], input$select_player2)
-    dat = bind_rows(dat %>% filter(Player == input$player), dat %>% filter(Player == player2)) %>%
-      select(-Player) %>% t()
-    dat = as.data.frame(dat, row.names = rownames(dat))
+    if(input$player %in% dat$Player) {
+      dat = bind_rows(dat %>% filter(Player == input$player), dat %>% filter(Player == player2)) %>%
+        select(-Player) %>% t()
+      dat = as.data.frame(dat, row.names = rownames(dat))
+    } else {
+      df1 = heroStats[[5]] %>% filter(Player == input$player, Hero == input$playedHero) %>%
+        select(-Player, -Hero, -`Hero Usage`) %>% t()
+      df2 = dat %>% filter(Player == player2) %>%
+        select(Team, `Time(min.)`, `Fight Win Rate`:`Time to Charge Ult`) %>% t()
+      dat = cbind(df1, df2)
+      rnames = rownames(df1)
+      dat = as.data.frame(dat, row.names = rnames)
+    }
     names(dat) = c(input$player, player2)
     dat$Indicator = 0
     for(i in c(3:5, 7:8)) {

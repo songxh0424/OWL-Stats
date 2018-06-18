@@ -26,8 +26,8 @@ dbSidebar = dashboardSidebar(
         br()
       ),
       'heroes'
-    ),
-    menuItem('League Overview', tabName = 'league', icon = icon('list')),
+    )
+    ## menuItem('League Overview', tabName = 'league', icon = icon('list')),
     tags$head(tags$script(HTML('$(document).ready(function() {$(".treeview-menu").css("display", "block");})')))
   )
 )
